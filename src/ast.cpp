@@ -1,0 +1,75 @@
+#include "ast.h"
+
+namespace nova 
+{
+
+Ast::Ast(const TokenLocation& location, AstType type)
+    : location_(location), ast_type_(type)
+{
+}
+
+IfStatementAst::IfStatementAst(const TokenLocation& location, 
+                               AstType type, 
+                               AstPtr test_part, 
+                               AstPtr then_part, 
+                               AstPtr else_part)
+    : Ast(location, type),
+      test_part_(std::move(test_part)),
+      then_part_(std::move(then_part)),
+      else_part_(std::move(else_part))
+{
+}
+    
+RepeatStatementAst::RepeatStatementAst(const TokenLocation& location, 
+                                       AstType type, 
+                                       AstPtr body_part, 
+                                       AstPtr test_part)
+    : Ast(location, type),
+      body_part_(std::move(body_part)),
+      test_part_(std::move(test_part))
+{
+}
+
+AssignStatementAst::AssignStatementAst(const TokenLocation& location, 
+                                       AstType type, 
+                                       VariableAstPtr var, 
+                                       AstPtr expr)
+    : Ast(location, type),
+      variable_(std::move(var)),
+      expression_(std::move(expr))
+{
+}
+
+ReadStatementAst::ReadStatementAst(const TokenLocation& location, AstType type)
+    : Ast(location, type)
+{
+}
+
+WriteStatementAst::WriteStatementAst(const TokenLocation& location, AstType type, AstPtr expr)
+    : Ast(location, type), expression_(std::move(expr))
+{
+}
+
+OperatorAst::OperatorAst(const TokenLocation& location, 
+                         AstType type, 
+                         const std::string& name, 
+                         AstPtr left_part, 
+                         AstPtr right_part)
+    : Ast(location, type),
+      operator_name_(name),
+      left_part_(std::move(left_part)),
+      right_part_(std::move(right_part))
+{
+}
+
+ConstantAst::ConstantAst(const TokenLocation& location, AstType type, int64_t value)
+    : Ast(location, type), int_value_(value)
+{
+}
+
+VariableAst::VariableAst(const TokenLocation& location, AstType type, const std::string& var_name)
+    : Ast(location, type), name_(var_name)
+{
+}
+
+} // namespace nova

@@ -18,7 +18,7 @@ set(CMAKE_CXX_FLAGS
 -march=native
 -D_FILE_OFFSET_BITS=64
 -rdynamic
--std=c++11
+-std=c++1y
 )
 
 if(CMAKE_BUILD_BITS EQUAL 32)

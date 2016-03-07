@@ -157,8 +157,7 @@ typedef std::unique_ptr<TokenRecord> TokenRecordPtr;
 
 inline TokenRecordPtr makeTokenRecord(TokenType token_type, TokenValue token_value, int symbol_precedence)
 {
-    TokenRecordPtr token_record(new TokenRecord(token_type, token_value, symbol_precedence));
-    return std::move(token_record);
+    return std::make_unique<TokenRecord>(token_type, token_value, symbol_precedence);
 }
     
 } // namespace nova
