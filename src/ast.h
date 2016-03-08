@@ -18,8 +18,8 @@ enum class AstType
     kRead,
     kWrite,
     kOperator,
-    kNumber,
-    kIdentifier,
+    kConstant,
+    kVariable,
 };
 
 class Ast;
@@ -32,15 +32,15 @@ class OperatorAst;
 class ConstantAst;
 class VariableAst;
 
-typedef std::unique_ptr<Ast> AstPtr;
-typedef std::unique_ptr<IfStatementAst> IfStatementAstPtr;
-typedef std::unique_ptr<RepeatStatementAst> RepeatStatementAstPtr;
-typedef std::unique_ptr<AssignStatementAst> AssignStatementAstPtr;
-typedef std::unique_ptr<ReadStatementAst> ReadStatementAstPtr;
-typedef std::unique_ptr<WriteStatementAst> WriteStatementAstPtr;
-typedef std::unique_ptr<OperatorAst> OperatorAstPtr;
-typedef std::unique_ptr<ConstantAst> ConstantAstPtr;
-typedef std::unique_ptr<VariableAst> VariableAstPtr;
+typedef std::shared_ptr<Ast> AstPtr;
+typedef std::shared_ptr<IfStatementAst> IfStatementAstPtr;
+typedef std::shared_ptr<RepeatStatementAst> RepeatStatementAstPtr;
+typedef std::shared_ptr<AssignStatementAst> AssignStatementAstPtr;
+typedef std::shared_ptr<ReadStatementAst> ReadStatementAstPtr;
+typedef std::shared_ptr<WriteStatementAst> WriteStatementAstPtr;
+typedef std::shared_ptr<OperatorAst> OperatorAstPtr;
+typedef std::shared_ptr<ConstantAst> ConstantAstPtr;
+typedef std::shared_ptr<VariableAst> VariableAstPtr;
 
 class Ast
 {
@@ -53,9 +53,14 @@ public:
         return ast_type_;
     }
 
-    void setNext(AstPtr& p)
+    void setNext(const AstPtr& p)
     {
-        next_ = std::move(p);
+        next_ = p;
+    }
+
+    AstPtr& next()
+    {
+        return next_;
     }
 
     const AstPtr& next() const

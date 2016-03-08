@@ -14,6 +14,10 @@ void errorToken(const std::string& message)
     Scanner::setErrorFlag(true);
 }
 
-void errorSyntax(const std::string& message);
+void errorSyntax(const std::string& message)
+{
+    std::cerr << "Syntax Error: " << message << std::endl;
+    Parser::setErrorFlag(true);
+}
     
 } // namespace nova

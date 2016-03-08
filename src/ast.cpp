@@ -14,9 +14,9 @@ IfStatementAst::IfStatementAst(const TokenLocation& location,
                                AstPtr then_part, 
                                AstPtr else_part)
     : Ast(location, type),
-      test_part_(std::move(test_part)),
-      then_part_(std::move(then_part)),
-      else_part_(std::move(else_part))
+      test_part_(test_part),
+      then_part_(then_part),
+      else_part_(else_part)
 {
 }
     
@@ -25,8 +25,8 @@ RepeatStatementAst::RepeatStatementAst(const TokenLocation& location,
                                        AstPtr body_part, 
                                        AstPtr test_part)
     : Ast(location, type),
-      body_part_(std::move(body_part)),
-      test_part_(std::move(test_part))
+      body_part_(body_part),
+      test_part_(test_part)
 {
 }
 
@@ -35,8 +35,8 @@ AssignStatementAst::AssignStatementAst(const TokenLocation& location,
                                        VariableAstPtr var, 
                                        AstPtr expr)
     : Ast(location, type),
-      variable_(std::move(var)),
-      expression_(std::move(expr))
+      variable_(var),
+      expression_(expr)
 {
 }
 
@@ -46,7 +46,7 @@ ReadStatementAst::ReadStatementAst(const TokenLocation& location, AstType type)
 }
 
 WriteStatementAst::WriteStatementAst(const TokenLocation& location, AstType type, AstPtr expr)
-    : Ast(location, type), expression_(std::move(expr))
+    : Ast(location, type), expression_(expr)
 {
 }
 
@@ -57,8 +57,8 @@ OperatorAst::OperatorAst(const TokenLocation& location,
                          AstPtr right_part)
     : Ast(location, type),
       operator_name_(name),
-      left_part_(std::move(left_part)),
-      right_part_(std::move(right_part))
+      left_part_(left_part),
+      right_part_(right_part)
 {
 }
 
