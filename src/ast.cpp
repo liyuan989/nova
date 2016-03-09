@@ -40,8 +40,8 @@ AssignStatementAst::AssignStatementAst(const TokenLocation& location,
 {
 }
 
-ReadStatementAst::ReadStatementAst(const TokenLocation& location, AstType type)
-    : Ast(location, type)
+ReadStatementAst::ReadStatementAst(const TokenLocation& location, AstType type, VariableAstPtr var)
+    : Ast(location, type), variable_(var)
 {
 }
 
@@ -50,17 +50,28 @@ WriteStatementAst::WriteStatementAst(const TokenLocation& location, AstType type
 {
 }
 
-OperatorAst::OperatorAst(const TokenLocation& location, 
-                         AstType type, 
-                         const std::string& name, 
-                         AstPtr left_part, 
-                         AstPtr right_part)
+ExpressionAst::ExpressionAst(const TokenLocation& location, 
+                             AstType type, 
+                             const std::string& name,
+                             TokenValue token_value,
+                             AstPtr left_part, 
+                             AstPtr right_part)
     : Ast(location, type),
       operator_name_(name),
+      operator_value_(token_value),
       left_part_(left_part),
       right_part_(right_part)
 {
 }
+
+ExpressionAst::ExpressionAst(const TokenLocation& location, 
+                             AstType type, 
+                             AstPtr left_part) 
+    : Ast(location, type),
+      left_part_(left_part)
+{
+}
+
 
 ConstantAst::ConstantAst(const TokenLocation& location, AstType type, int64_t value)
     : Ast(location, type), int_value_(value)

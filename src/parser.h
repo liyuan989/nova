@@ -33,13 +33,18 @@ private:
     bool expectToken(TokenValue value, const std::string& token_name, bool advance_next_token);
     void errorReport(const std::string& message);
 
+    bool isEndOfStatementSequence();
     AstPtr parseStatementSequence();
+    AstPtr parseStatement();
     AstPtr parseIfStatement();
     AstPtr parseRepeatStatement();
     AstPtr parseAssignStatement();
     AstPtr parseReadStatement();
     AstPtr parseWriteStatement();
     AstPtr parseExpression();
+    AstPtr parseSimpleExpression();
+    AstPtr parseTerm();
+    AstPtr parseFactor();
 
 private:
     Scanner& scanner_;

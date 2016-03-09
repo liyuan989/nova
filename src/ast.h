@@ -17,7 +17,7 @@ enum class AstType
     kAssign,
     kRead,
     kWrite,
-    kOperator,
+    kExpression,
     kConstant,
     kVariable,
 };
@@ -28,7 +28,7 @@ class RepeatStatementAst;
 class AssignStatementAst;
 class ReadStatementAst;
 class WriteStatementAst;
-class OperatorAst;
+class ExpressionAst;
 class ConstantAst;
 class VariableAst;
 
@@ -38,7 +38,7 @@ typedef std::shared_ptr<RepeatStatementAst> RepeatStatementAstPtr;
 typedef std::shared_ptr<AssignStatementAst> AssignStatementAstPtr;
 typedef std::shared_ptr<ReadStatementAst> ReadStatementAstPtr;
 typedef std::shared_ptr<WriteStatementAst> WriteStatementAstPtr;
-typedef std::shared_ptr<OperatorAst> OperatorAstPtr;
+typedef std::shared_ptr<ExpressionAst> ExpressionAstPtr;
 typedef std::shared_ptr<ConstantAst> ConstantAstPtr;
 typedef std::shared_ptr<VariableAst> VariableAstPtr;
 
@@ -58,12 +58,7 @@ public:
         next_ = p;
     }
 
-    AstPtr& next()
-    {
-        return next_;
-    }
-
-    const AstPtr& next() const
+    AstPtr next() const
     {
         return next_;
     }
@@ -151,8 +146,16 @@ private:
 class ReadStatementAst : public Ast
 {
 public:
-    ReadStatementAst(const TokenLocation& location, AstType type);
+    ReadStatementAst(const TokenLocation& location, AstType type, VariableAstPtr var);
     virtual ~ReadStatementAst() = default;
+
+    VariableAstPtr variable() const
+    {
+        return variable_;
+    }
+
+private:
+    VariableAstPtr variable_;
 };
 
 class WriteStatementAst : public Ast
@@ -170,15 +173,28 @@ private:
     AstPtr expression_;
 };
 
-class OperatorAst : public Ast
+class ExpressionAst  : public Ast
 {
 public:
-    OperatorAst(const TokenLocation& location, AstType type, const std::string& name, AstPtr left_part, AstPtr right_part);
-    virtual ~OperatorAst() = default;
+    ExpressionAst(const TokenLocation& location, AstType type, AstPtr left_part);
+
+    ExpressionAst(const TokenLocation& location, 
+                  AstType type, 
+                  const std::string& name, 
+                  TokenValue token_value,
+                  AstPtr left_part, 
+                  AstPtr right_part);
+
+    virtual ~ExpressionAst() = default;
 
     const std::string& operatorName() const
     {
         return operator_name_;
+    }
+
+    TokenValue operatorTokenValue() const
+    {
+        return operator_value_;
     }
 
     const AstPtr& leftPart() const
@@ -193,6 +209,7 @@ public:
 
 private:
     std::string operator_name_;
+    TokenValue operator_value_;
     AstPtr left_part_;
     AstPtr right_part_;
 };

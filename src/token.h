@@ -37,7 +37,7 @@ enum class TokenValue
     kMultiply,          // *
     kDivide,            // /
     kEqual,             // =
-    kLessEqual,         // <=
+    kLess,              // <
     kLeftParenthesis,   // (
     kRightParenthesis,  // )
     kSemicolon,         // ;

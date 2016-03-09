@@ -33,7 +33,7 @@ Scanner::Scanner(const std::string& file_name)
     addToken("*", makeTokenRecord(TokenType::kOperator, TokenValue::kMultiply, 10));
     addToken("/", makeTokenRecord(TokenType::kOperator, TokenValue::kDivide, 10));
     addToken("=", makeTokenRecord(TokenType::kOperator, TokenValue::kEqual, 2));
-    addToken("<", makeTokenRecord(TokenType::kOperator, TokenValue::kLessEqual, 2));
+    addToken("<", makeTokenRecord(TokenType::kOperator, TokenValue::kLess, 2));
     addToken("(", makeTokenRecord(TokenType::kDelimiter, TokenValue::kLeftParenthesis, -1));
     addToken(")", makeTokenRecord(TokenType::kDelimiter, TokenValue::kRightParenthesis, -1));
     addToken(";", makeTokenRecord(TokenType::kDelimiter, TokenValue::kSemicolon, -1));
@@ -264,7 +264,7 @@ void Scanner::handleOperatorState()
         }
         else
         {
-            errorReport("Invalid character.");
+            errorReport("error: invalid character '" + buffer_ + "'");
             state_ = State::kNone;
         }
     }

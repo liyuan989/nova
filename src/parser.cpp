@@ -10,7 +10,7 @@ bool Parser::error_flag_ = false;
 Parser::Parser(Scanner& scanner)
     : scanner_(scanner)
 {
-    scanner_.getNextToken();
+    scanner_.getNextToken();  // get first token
 }
 
 AstPtr Parser::parse()
@@ -22,60 +22,78 @@ AstPtr Parser::parse()
     }
     ast_ = parseStatementSequence();
     return ast_;
-}    
+}
 
 AstPtr Parser::parseStatementSequence()
 {
-    AstPtr head = std::make_shared<Ast>(TokenLocation(), AstType::kNone);
+    AstPtr head = parseStatement();
     AstPtr current_ptr = head;
-    while (current_ptr != nullptr) 
+
+    while (current_ptr != nullptr && !isEndOfStatementSequence()) 
     {
-        switch (scanner_.getToken().getTokenValue()) 
-        {
-            case TokenValue::kIf:
-                current_ptr->setNext(parseIfStatement());                
-                break;
-
-            case TokenValue::kRepeat:
-                current_ptr->setNext(parseRepeatStatement());
-                break;
-
-            case TokenValue::kRead:
-                current_ptr->setNext(parseReadStatement());
-                break;
-
-            case TokenValue::kWrite:
-                current_ptr->setNext(parseWriteStatement());
-                break;
-
-            case TokenValue::kSemicolon:
-                scanner_.getNextToken();
-                break;
-
-            default:
-                {
-                    switch (scanner_.getToken().getTokenType()) 
-                    {
-                        case TokenType::kKeyword:     // else, end, until
-                        case TokenType::kEndOfFile:
-                            return head->next();
-
-                        case TokenType::kIdentifier:
-                            current_ptr->setNext(parseAssignStatement());
-                            break;
-
-                        default:
-                            errorReport("Unexpected TokenType or TokenValue.");
-                            return head->next();
-                    }
-                } 
-                break;          
-        }
-
+        expectToken(TokenValue::kSemicolon, ";", true);
+        current_ptr->setNext(parseStatement());
         current_ptr = current_ptr->next();
     }
+   
+    return head;
+}
 
-    return head->next();
+bool Parser::isEndOfStatementSequence()
+{
+    switch (scanner_.getToken().getTokenValue()) 
+    {
+        case TokenValue::kElse:
+        case TokenValue::kEnd:
+        case TokenValue::kUntil:
+            return true;
+
+        case TokenValue::kSemicolon:
+            return false;
+
+        default:
+        {
+            if (scanner_.getToken().getTokenType() == TokenType::kEndOfFile) 
+            {
+                return true;   
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+}
+
+AstPtr Parser::parseStatement()
+{
+    switch (scanner_.getToken().getTokenValue()) 
+    {
+        case TokenValue::kIf:
+            return parseIfStatement();                
+
+        case TokenValue::kRepeat:
+            return parseRepeatStatement();
+
+        case TokenValue::kRead:
+            return parseReadStatement();
+
+        case TokenValue::kWrite:
+            return parseWriteStatement();
+
+        default:
+        {
+            if (scanner_.getToken().getTokenType() == TokenType::kIdentifier) 
+            {
+                return parseAssignStatement();   
+            }
+            else
+            {
+                errorReport("error: unknown token '" + scanner_.getToken().getTokenName() + "'");
+                return nullptr;
+            }
+        }
+    }
 }
 
 AstPtr Parser::parseIfStatement()
@@ -99,18 +117,18 @@ AstPtr Parser::parseIfStatement()
             break;
 
         case TokenValue::kElse:
+        {
+            scanner_.getNextToken();  // eat "else"
+            else_part = parseStatementSequence();
+            if (!expectToken(TokenValue::kEnd, "end", false)) 
             {
-                scanner_.getNextToken();  // eat "else"
-                else_part = parseStatementSequence();
-                if (!expectToken(TokenValue::kEnd, "end", false)) 
-                {
-                    return nullptr;
-                }
+                return nullptr;
             }
             break;
+        }
 
         default:
-            errorReport("Invalid token: " + scanner_.getToken().getTokenName());
+            errorReport("error: invalid token '" + scanner_.getToken().getTokenName() + "'");
             return nullptr;
     }
     scanner_.getNextToken();  // eat "end"
@@ -152,17 +170,107 @@ AstPtr Parser::parseAssignStatement()
 
 AstPtr Parser::parseReadStatement()
 {
-
+    TokenLocation loc = scanner_.getToken().getTokenLocation();
+    if (!validateToken(TokenValue::kRead, true)) 
+    {
+        return nullptr;   
+    }
+    if (!expectToken(TokenType::kIdentifier, "identifier", false)) 
+    {
+        return nullptr;   
+    }
+    VariableAstPtr var = std::make_shared<VariableAst>(scanner_.getToken().getTokenLocation(), 
+                                                       AstType::kVariable, 
+                                                       scanner_.getToken().getTokenName());
+    scanner_.getNextToken(); // eat variable
+    return std::make_shared<ReadStatementAst>(loc, AstType::kRead, var);
 }
 
 AstPtr Parser::parseWriteStatement()
 {
-
+    TokenLocation loc = scanner_.getToken().getTokenLocation();
+    if (!validateToken(TokenValue::kWrite, true)) 
+    {
+        return nullptr;   
+    }
+    AstPtr expr = parseExpression();
+    return std::make_shared<WriteStatementAst>(loc, AstType::kWrite, expr);
 }
 
 AstPtr Parser::parseExpression()
 {
+    TokenLocation loc = scanner_.getToken().getTokenLocation();
+    AstPtr left_part = parseSimpleExpression();
 
+    std::string op_name = scanner_.getToken().getTokenName();
+    TokenValue op_value = scanner_.getToken().getTokenValue();
+    if (op_value != TokenValue::kLess && op_value != TokenValue::kEqual)  // < or =
+    {
+        return left_part;
+    }
+
+    scanner_.getNextToken();  // eat operator
+    AstPtr right_part = parseSimpleExpression();
+    return std::make_shared<ExpressionAst>(loc, AstType::kExpression, op_name, op_value, left_part, right_part);
+}
+
+AstPtr Parser::parseSimpleExpression()
+{
+    TokenLocation loc = scanner_.getToken().getTokenLocation();
+    AstPtr left_part = parseTerm();
+
+    std::string op_name = scanner_.getToken().getTokenName();
+    TokenValue op_value = scanner_.getToken().getTokenValue();
+    if (op_value != TokenValue::kPlus && op_value != TokenValue::kMinus)  // + or -
+    {
+        return left_part;
+    }
+
+    scanner_.getNextToken();  // eat operator
+    AstPtr right_part = parseTerm();
+    return std::make_shared<ExpressionAst>(loc, AstType::kExpression, op_name, op_value, left_part, right_part);
+}
+
+AstPtr Parser::parseTerm()
+{
+    TokenLocation loc = scanner_.getToken().getTokenLocation();
+    AstPtr left_part = parseFactor();
+
+    std::string op_name = scanner_.getToken().getTokenName();
+    TokenValue op_value = scanner_.getToken().getTokenValue();
+    if (op_value != TokenValue::kMultiply && op_value != TokenValue::kDivide)   // * or /
+    {
+        return left_part;
+    }
+
+    scanner_.getNextToken();  // eat operator
+    AstPtr right_part = parseFactor();
+    return std::make_shared<ExpressionAst>(loc, AstType::kExpression, op_name, op_value, left_part, right_part);
+}
+
+AstPtr Parser::parseFactor()
+{
+    TokenLocation loc = scanner_.getToken().getTokenLocation();
+    AstPtr result = nullptr;
+
+    switch (scanner_.getToken().getTokenType()) 
+    {
+        case TokenType::kIdentifier:
+            result = std::make_shared<VariableAst>(loc, AstType::kVariable, scanner_.getToken().getTokenName());
+            scanner_.getNextToken();  // eat variable
+            break;
+            
+        case TokenType::kNumber:
+            result = std::make_shared<ConstantAst>(loc, AstType::kConstant, scanner_.getToken().getIntValue());
+            scanner_.getNextToken();  // eat constant number
+            break;
+
+        default:
+            result = parseExpression();
+            break;
+    }
+
+    return result;
 }
 
 bool Parser::validateToken(TokenType type, bool advance_next_token)
