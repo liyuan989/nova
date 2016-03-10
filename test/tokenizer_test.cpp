@@ -3,7 +3,7 @@
 
 #include "scanner.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     nova::Scanner scanner("test.tiny");
     nova::Token toc = scanner.getNextToken();

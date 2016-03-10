@@ -1,5 +1,6 @@
 #include <iostream>
-#include <parser.h>
+
+#include "parser.h"
 
 using namespace nova;
 
@@ -121,7 +122,7 @@ void printTree(AstPtr root, int& count)
     count -= 4;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     Scanner scanner("test.tiny");
     Parser parser(scanner);
