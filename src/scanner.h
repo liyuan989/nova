@@ -36,7 +36,6 @@ public:
 
     TokenLocation getTokenLocation()
     {
-        updateTokenLocation();
         return location_;
     }
 

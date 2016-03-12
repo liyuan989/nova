@@ -256,18 +256,32 @@ AstPtr Parser::parseFactor()
     switch (scanner_.getToken().getTokenType()) 
     {
         case TokenType::kIdentifier:
+        {
             result = std::make_shared<VariableAst>(loc, AstType::kVariable, scanner_.getToken().getTokenName());
             scanner_.getNextToken();  // eat variable
             break;
+        }
             
         case TokenType::kNumber:
+        {
             result = std::make_shared<ConstantAst>(loc, AstType::kConstant, scanner_.getToken().getIntValue());
             scanner_.getNextToken();  // eat constant number
             break;
+        }
 
         default:
+        {
+            if (!expectToken(TokenValue::kLeftParenthesis, "(", true)) 
+            {
+                return nullptr;   
+            }
             result = parseExpression();
+            if (!expectToken(TokenValue::kRightParenthesis, ")", true)) 
+            {
+                return nullptr;   
+            }
             break;
+        }
     }
 
     return result;
