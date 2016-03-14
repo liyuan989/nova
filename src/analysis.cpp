@@ -1,6 +1,7 @@
 #include "analysis.h"
 
 #include "parser.h"
+#include "error.h"
 
 namespace nova 
 {
@@ -24,7 +25,8 @@ void Analysis::buildSymbolTable()
 
 void Analysis::typeCheck()
 {
-
+    Func post_func = std::bind(&Analysis::checkNode, this, std::placeholders::_1);
+    traversal(root_, Func(), post_func);
 }
  
 void Analysis::traversal(AstPtr node, Func pre_func, Func post_func)
@@ -119,4 +121,123 @@ void Analysis::traversal(AstPtr node, Func pre_func, Func post_func)
     }
 }
    
+void Analysis::checkNode(AstPtr node)
+{
+    switch (node->getAstType()) 
+    {
+        case AstType::kVariable:
+        case AstType::kConstant:
+        {
+            node->setExpressionType(ExpressionType::kInteger);
+            break;
+        }
+
+        case AstType::kExpression:
+        {
+            ExpressionAstPtr ptr = std::dynamic_pointer_cast<ExpressionAst>(ptr);
+            if (ptr) 
+            {
+                if (ptr->operatorTokenValue() == TokenValue::kEqual ||
+                    ptr->operatorTokenValue() == TokenValue::kLess) 
+                {
+                    ptr->setExpressionType(ExpressionType::kBoolean);   
+                }
+                else
+                {
+                    if (ptr->leftPart()->getExpressionType() == ExpressionType::kInteger &&
+                        ptr->rightPart()->getExpressionType() == ExpressionType::kInteger) 
+                    {
+                        ptr->setExpressionType(ExpressionType::kInteger);      
+                    }
+                    else
+                    {
+                        std::string message = "cannot covert from '" + ptr->rightPart()->getExpressionName() +
+                            "' to '" + ptr->leftPart()->getExpressionName() + "'";
+                        errorReport(message);
+                    }
+                }
+            }
+            break;
+        }
+
+        case AstType::kIf:
+        {
+            IfStatementAstPtr ptr = std::dynamic_pointer_cast<IfStatementAst>(ptr);
+            if (ptr) 
+            {
+                if (ptr->testPart()->getExpressionType() != ExpressionType::kBoolean) 
+                {
+                    std::string message = "cannot convert from '" + ptr->testPart()->getExpressionName() + "' to boolean";
+                    errorReport(message);
+                }   
+            }
+            break;
+        }
+
+        case AstType::kRepeat:
+        {
+            RepeatStatementAstPtr ptr = std::dynamic_pointer_cast<RepeatStatementAst>(ptr);
+            if (ptr) 
+            {
+                if (ptr->testPart()->getExpressionType() != ExpressionType::kBoolean) 
+                {
+                    std::string message = "cannot convert from '" + ptr->testPart()->getExpressionName() + "' to boolean";
+                    errorReport(message);
+                }   
+            }
+            break;
+        }
+
+        case AstType::kAssign:
+        {
+            AssignStatementAstPtr ptr = std::dynamic_pointer_cast<AssignStatementAst>(ptr);
+            if (ptr) 
+            {
+                if (ptr->expression()->getExpressionType() != ExpressionType::kInteger) 
+                {
+                    std::string message = "cannot convert from '" + ptr->expression()->getExpressionName() + "' to integer";
+                    errorReport(message);
+                }   
+            }
+            break;
+        }
+
+        case AstType::kRead:
+        {
+            ReadStatementAstPtr ptr = std::dynamic_pointer_cast<ReadStatementAst>(ptr);
+            if (ptr) 
+            {
+                if (ptr->variable()->getExpressionType() != ExpressionType::kInteger) 
+                {
+                    std::string message = "cannot convert from '" + ptr->variable()->getExpressionName() + "' to integer";
+                    errorReport(message);
+                }   
+            }
+            break;
+        }
+
+        case AstType::kWrite:
+        {
+            WriteStatementAstPtr ptr = std::dynamic_pointer_cast<WriteStatementAst>(ptr);
+            if (ptr) 
+            {
+                if (ptr->expression()->getExpressionType() != ExpressionType::kInteger) 
+                {
+                    std::string message = "cannot convert from '" + ptr->expression()->getExpressionName() + "' to integer";
+                    errorReport(message);
+                }      
+            }
+            break;
+        }
+
+        default:
+            break;   
+    }
+}
+
+void Analysis::errorReport(const std::string& message)
+{
+    errorSyntax(message);
+}
+
 } // namespace nova

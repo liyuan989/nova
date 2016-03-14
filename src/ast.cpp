@@ -4,8 +4,26 @@ namespace nova
 {
 
 Ast::Ast(const TokenLocation& location, AstType type)
-    : location_(location), ast_type_(type)
+    : location_(location), ast_type_(type), expression_type_(ExpressionType::kVoid)
 {
+}
+
+const std::string Ast::getExpressionName() const
+{
+    switch (expression_type_) 
+    {
+        case ExpressionType::kVoid:
+            return "void";
+
+        case ExpressionType::kInteger:
+            return "integer";
+
+        case ExpressionType::kBoolean:
+            return "boolean";
+
+        default:
+            return "unknown";
+    } 
 }
 
 IfStatementAst::IfStatementAst(const TokenLocation& location, 

@@ -25,6 +25,8 @@ private:
     typedef std::function<void (AstPtr)> Func;
 
     void traversal(AstPtr node, Func pre_func, Func post_func);
+    void checkNode(AstPtr node);
+    void errorReport(const std::string& message);
 
 private:
     AstPtr root_;

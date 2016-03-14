@@ -22,6 +22,13 @@ enum class AstType
     kVariable,
 };
 
+enum class ExpressionType 
+{ 
+    kVoid,
+    kInteger,
+    kBoolean,
+};
+
 class Ast;
 class IfStatementAst;
 class RepeatStatementAst;
@@ -68,9 +75,22 @@ public:
         return location_;
     }
 
+    void setExpressionType(ExpressionType type)
+    {
+        expression_type_ = type;
+    }
+
+    ExpressionType getExpressionType() const
+    {
+        return expression_type_;
+    }
+
+    const std::string getExpressionName() const;
+
 private:
     TokenLocation location_;
     AstType ast_type_;
+    ExpressionType expression_type_;
     AstPtr next_;
 };
 
