@@ -66,14 +66,29 @@ public:
     {
     }
 
-    TokenLocation(const std::string& file_name, int line, int column)
-        : file_name_(file_name), line_(line), column_(column)
+    TokenLocation(const std::string& file_name, int token_line, int token_column)
+        : file_name_(file_name), line_(token_line), column_(token_column)
     {
     }
 
     std::string toString() const
     {
         return file_name_ + ":" + std::to_string(line_) + ":" + std::to_string(column_) + ":";   
+    }
+
+    int line() const
+    {
+        return line_;
+    }
+
+    int column() const
+    {
+        return column_;
+    }
+
+    const std::string& filename() const
+    {
+        return file_name_;
     }
 
 private:

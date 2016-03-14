@@ -63,7 +63,7 @@ public:
         return next_;
     }
 
-    const TokenLocation& getTokenLocation() const
+    TokenLocation getTokenLocation() const
     {
         return location_;
     }
@@ -80,17 +80,17 @@ public:
     IfStatementAst(const TokenLocation& location, AstType type, AstPtr test_part, AstPtr then_part, AstPtr else_part);
     virtual ~IfStatementAst() = default;
    
-    const AstPtr& testPart() const
+    AstPtr testPart() const
     {
         return test_part_;
     }
 
-    const AstPtr& thenPart() const
+    AstPtr thenPart() const
     {
         return then_part_;
     }
 
-    const AstPtr& elsePart() const
+    AstPtr elsePart() const
     {
         return else_part_;
     }
@@ -107,12 +107,12 @@ public:
     RepeatStatementAst(const TokenLocation& location, AstType type, AstPtr body_part, AstPtr test_part);
     virtual ~RepeatStatementAst() = default;
 
-    const AstPtr& bodyPart() const
+    AstPtr bodyPart() const
     {
         return body_part_;
     }
 
-    const AstPtr& testPart() const
+    AstPtr testPart() const
     {
         return test_part_;
     }
@@ -128,12 +128,12 @@ public:
     AssignStatementAst(const TokenLocation& location, AstType type, VariableAstPtr var, AstPtr expr);
     virtual ~AssignStatementAst() = default;
 
-    const VariableAstPtr& variable() const
+    VariableAstPtr variable() const
     {
         return variable_;
     }
 
-    const AstPtr& expression() const
+    AstPtr expression() const
     {
         return expression_;
     }
@@ -164,7 +164,7 @@ public:
     WriteStatementAst(const TokenLocation& location, AstType type, AstPtr expr);
     virtual ~WriteStatementAst() = default;
 
-    const AstPtr& expression() const
+    AstPtr expression() const
     {
         return expression_;
     }
@@ -197,12 +197,12 @@ public:
         return operator_value_;
     }
 
-    const AstPtr& leftPart() const
+    AstPtr leftPart() const
     {
         return left_part_;
     }
 
-    const AstPtr& rightPart() const
+    AstPtr rightPart() const
     {
         return right_part_;
     }
