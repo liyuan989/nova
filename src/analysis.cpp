@@ -167,7 +167,8 @@ void Analysis::checkNode(AstPtr node)
             {
                 if (ptr->testPart()->getExpressionType() != ExpressionType::kBoolean) 
                 {
-                    std::string message = "cannot convert from '" + ptr->testPart()->getExpressionName() + "' to boolean";
+                    std::string message = "cannot convert from '" + ptr->testPart()->getExpressionName() + 
+                        "' to 'boolean'";
                     errorReport(message);
                 }   
             }
@@ -181,7 +182,8 @@ void Analysis::checkNode(AstPtr node)
             {
                 if (ptr->testPart()->getExpressionType() != ExpressionType::kBoolean) 
                 {
-                    std::string message = "cannot convert from '" + ptr->testPart()->getExpressionName() + "' to boolean";
+                    std::string message = "cannot convert from '" + ptr->testPart()->getExpressionName() + 
+                        "' to 'boolean'";
                     errorReport(message);
                 }   
             }
@@ -195,7 +197,8 @@ void Analysis::checkNode(AstPtr node)
             {
                 if (ptr->expression()->getExpressionType() != ExpressionType::kInteger) 
                 {
-                    std::string message = "cannot convert from '" + ptr->expression()->getExpressionName() + "' to integer";
+                    std::string message = "cannot convert from '" + ptr->expression()->getExpressionName() + 
+                        "' to 'integer'";
                     errorReport(message);
                 }   
             }
@@ -209,7 +212,8 @@ void Analysis::checkNode(AstPtr node)
             {
                 if (ptr->variable()->getExpressionType() != ExpressionType::kInteger) 
                 {
-                    std::string message = "cannot convert from '" + ptr->variable()->getExpressionName() + "' to integer";
+                    std::string message = "cannot convert from '" + ptr->variable()->getExpressionName() + 
+                        "' to 'integer'";
                     errorReport(message);
                 }   
             }
@@ -223,7 +227,8 @@ void Analysis::checkNode(AstPtr node)
             {
                 if (ptr->expression()->getExpressionType() != ExpressionType::kInteger) 
                 {
-                    std::string message = "cannot convert from '" + ptr->expression()->getExpressionName() + "' to integer";
+                    std::string message = "cannot convert from '" + ptr->expression()->getExpressionName() + 
+                        "' to 'integer'";
                     errorReport(message);
                 }      
             }
