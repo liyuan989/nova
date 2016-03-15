@@ -20,12 +20,13 @@ bool SymbolTable::innerInsert(const std::string& name, const TokenLocation& loca
     if (hash_map_.find(name) != hash_map_.end()) 
     {
         hash_map_[name]->location.push_back(std::make_pair(location.line(), location.column()));
+        return false;
     }
     else
     {
         hash_map_[name] = makeSymbolRecord(name, current_index_, location.line(), location.column());
+        return true;
     }
-    return true;
 }
 
 int SymbolTable::lookup(const std::string& name)
@@ -37,7 +38,7 @@ int SymbolTable::lookup(const std::string& name)
     return -1;
 }
 
-void SymbolTable::printSymbolTable()
+void SymbolTable::printSymbolTable() const
 {
     std::cout << "Symbol Table:" << std::endl;
     std::cout << "Variable Name    index    Line    Number" << std::endl;

@@ -20,6 +20,7 @@ public:
     
     void buildSymbolTable();
     void typeCheck();
+    void printSymbolTable() const;
 
 private:
     typedef std::function<void (AstPtr)> Func;

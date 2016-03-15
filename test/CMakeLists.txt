@@ -5,3 +5,6 @@ target_link_libraries(tokenizer_test nova)
 
 add_executable(parser_test parser_test.cpp)
 target_link_libraries(parser_test nova)
+
+add_executable(analysis_test analysis_test.cpp)
+target_link_libraries(analysis_test nova)

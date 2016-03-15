@@ -8,11 +8,11 @@ namespace nova
 
 void Analysis::buildSymbolTable()
 {
-    Func pre_func = [&](AstPtr node)
+    Func pre_func = [this](AstPtr node)
     {
         if (node->getAstType() == AstType::kVariable) 
         {
-            VariableAstPtr ptr = std::dynamic_pointer_cast<VariableAst>(ptr);
+            VariableAstPtr ptr = std::dynamic_pointer_cast<VariableAst>(node);
             if (ptr) 
             {
                 symbol_table_.insert(ptr->name(), ptr->getTokenLocation());
@@ -31,93 +31,93 @@ void Analysis::typeCheck()
  
 void Analysis::traversal(AstPtr node, Func pre_func, Func post_func)
 {
-    if (node == nullptr) 
+    while (node != nullptr)
     {
-        return;   
-    }
-
-    if (pre_func) 
-    {
-        pre_func(node);   
-    }
-
-    switch (node->getAstType()) 
-    {
-        case AstType::kIf:
+        if (pre_func) 
         {
-            IfStatementAstPtr ptr = std::dynamic_pointer_cast<IfStatementAst>(node);
-            if (ptr) 
+            pre_func(node);   
+        }
+
+        switch (node->getAstType()) 
+        {
+            case AstType::kIf:
             {
-                traversal(ptr->testPart(), pre_func, post_func);
-                traversal(ptr->thenPart(), pre_func, post_func);
-                if (ptr->elsePart()) 
+                IfStatementAstPtr ptr = std::dynamic_pointer_cast<IfStatementAst>(node);
+                if (ptr) 
                 {
-                    traversal(ptr->elsePart(), pre_func, post_func);      
+                    traversal(ptr->testPart(), pre_func, post_func);
+                    traversal(ptr->thenPart(), pre_func, post_func);
+                    if (ptr->elsePart()) 
+                    {
+                        traversal(ptr->elsePart(), pre_func, post_func);      
+                    }
                 }
+                break;
             }
-            break;
-        }
 
-        case AstType::kRepeat:
-        {
-            RepeatStatementAstPtr ptr = std::dynamic_pointer_cast<RepeatStatementAst>(ptr);
-            if (ptr) 
+            case AstType::kRepeat:
             {
-                traversal(ptr->bodyPart(), pre_func, post_func);
-                traversal(ptr->testPart(), pre_func, post_func);
+                RepeatStatementAstPtr ptr = std::dynamic_pointer_cast<RepeatStatementAst>(node);
+                if (ptr) 
+                {
+                    traversal(ptr->bodyPart(), pre_func, post_func);
+                    traversal(ptr->testPart(), pre_func, post_func);
+                }
+                break;
             }
-            break;
-        }
 
-        case AstType::kAssign:
-        {
-            AssignStatementAstPtr ptr = std::dynamic_pointer_cast<AssignStatementAst>(ptr);
-            if (ptr) 
+            case AstType::kAssign:
             {
-                traversal(ptr->variable(), pre_func, post_func);
-                traversal(ptr->expression(), pre_func, post_func);
+                AssignStatementAstPtr ptr = std::dynamic_pointer_cast<AssignStatementAst>(node);
+                if (ptr) 
+                {
+                    traversal(ptr->variable(), pre_func, post_func);
+                    traversal(ptr->expression(), pre_func, post_func);
+                }
+                break;
             }
-            break;
-        }
 
-        case AstType::kRead:
-        {
-            ReadStatementAstPtr ptr = std::dynamic_pointer_cast<ReadStatementAst>(ptr);
-            if (ptr) 
+            case AstType::kRead:
             {
-                traversal(ptr->variable(), pre_func, post_func);       
+                ReadStatementAstPtr ptr = std::dynamic_pointer_cast<ReadStatementAst>(node);
+                if (ptr) 
+                {
+                    traversal(ptr->variable(), pre_func, post_func);       
+                }
+                break;
             }
-            break;
-        }
 
-        case AstType::kWrite:
-        {
-            WriteStatementAstPtr ptr = std::dynamic_pointer_cast<WriteStatementAst>(ptr);
-            if (ptr) 
+            case AstType::kWrite:
             {
-                traversal(ptr->expression(), pre_func, post_func);                
+                WriteStatementAstPtr ptr = std::dynamic_pointer_cast<WriteStatementAst>(node);
+                if (ptr) 
+                {
+                    traversal(ptr->expression(), pre_func, post_func);                
+                }
+                break;
             }
-            break;
-        }
 
-        case AstType::kExpression:
-        {
-            ExpressionAstPtr ptr = std::dynamic_pointer_cast<ExpressionAst>(ptr);
-            if (ptr) 
+            case AstType::kExpression:
             {
-                traversal(ptr->leftPart(), pre_func, post_func);
-                traversal(ptr->rightPart(), pre_func, post_func);
+                ExpressionAstPtr ptr = std::dynamic_pointer_cast<ExpressionAst>(node);
+                if (ptr) 
+                {
+                    traversal(ptr->leftPart(), pre_func, post_func);
+                    traversal(ptr->rightPart(), pre_func, post_func);
+                }
+                break;
             }
-            break;
+
+            default:
+                break;
         }
 
-        default:
-            break;
-    }
+        if (post_func) 
+        {
+            post_func(node);   
+        }
 
-    if (post_func) 
-    {
-        post_func(node);   
+        node = node->next();
     }
 }
    
@@ -134,7 +134,7 @@ void Analysis::checkNode(AstPtr node)
 
         case AstType::kExpression:
         {
-            ExpressionAstPtr ptr = std::dynamic_pointer_cast<ExpressionAst>(ptr);
+            ExpressionAstPtr ptr = std::dynamic_pointer_cast<ExpressionAst>(node);
             if (ptr) 
             {
                 if (ptr->operatorTokenValue() == TokenValue::kEqual ||
@@ -162,7 +162,7 @@ void Analysis::checkNode(AstPtr node)
 
         case AstType::kIf:
         {
-            IfStatementAstPtr ptr = std::dynamic_pointer_cast<IfStatementAst>(ptr);
+            IfStatementAstPtr ptr = std::dynamic_pointer_cast<IfStatementAst>(node);
             if (ptr) 
             {
                 if (ptr->testPart()->getExpressionType() != ExpressionType::kBoolean) 
@@ -177,7 +177,7 @@ void Analysis::checkNode(AstPtr node)
 
         case AstType::kRepeat:
         {
-            RepeatStatementAstPtr ptr = std::dynamic_pointer_cast<RepeatStatementAst>(ptr);
+            RepeatStatementAstPtr ptr = std::dynamic_pointer_cast<RepeatStatementAst>(node);
             if (ptr) 
             {
                 if (ptr->testPart()->getExpressionType() != ExpressionType::kBoolean) 
@@ -192,7 +192,7 @@ void Analysis::checkNode(AstPtr node)
 
         case AstType::kAssign:
         {
-            AssignStatementAstPtr ptr = std::dynamic_pointer_cast<AssignStatementAst>(ptr);
+            AssignStatementAstPtr ptr = std::dynamic_pointer_cast<AssignStatementAst>(node);
             if (ptr) 
             {
                 if (ptr->expression()->getExpressionType() != ExpressionType::kInteger) 
@@ -207,7 +207,7 @@ void Analysis::checkNode(AstPtr node)
 
         case AstType::kRead:
         {
-            ReadStatementAstPtr ptr = std::dynamic_pointer_cast<ReadStatementAst>(ptr);
+            ReadStatementAstPtr ptr = std::dynamic_pointer_cast<ReadStatementAst>(node);
             if (ptr) 
             {
                 if (ptr->variable()->getExpressionType() != ExpressionType::kInteger) 
@@ -222,7 +222,7 @@ void Analysis::checkNode(AstPtr node)
 
         case AstType::kWrite:
         {
-            WriteStatementAstPtr ptr = std::dynamic_pointer_cast<WriteStatementAst>(ptr);
+            WriteStatementAstPtr ptr = std::dynamic_pointer_cast<WriteStatementAst>(node);
             if (ptr) 
             {
                 if (ptr->expression()->getExpressionType() != ExpressionType::kInteger) 
@@ -243,6 +243,11 @@ void Analysis::checkNode(AstPtr node)
 void Analysis::errorReport(const std::string& message)
 {
     errorSyntax(message);
+}
+
+void Analysis::printSymbolTable() const
+{
+    symbol_table_.printSymbolTable();
 }
 
 } // namespace nova

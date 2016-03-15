@@ -42,7 +42,7 @@ public:
 
     bool insert(const std::string& name, const TokenLocation& location);
     int lookup(const std::string& name);
-    void printSymbolTable();
+    void printSymbolTable() const;
 
 private:
     bool innerInsert(const std::string& name, const TokenLocation& location);
