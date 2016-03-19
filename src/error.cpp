@@ -4,6 +4,7 @@
 
 #include "scanner.h"
 #include "parser.h"
+#include "codegen.h"
 
 namespace nova 
 {
@@ -23,6 +24,7 @@ void errorSyntax(const std::string& message)
 void errorCodeGen(const std::string& message)
 {
     std::cerr << "Codegen Error: " << message << std::endl;
+    CodeGenerator::setErrorFlag(true);
 }
     
 } // namespace nova

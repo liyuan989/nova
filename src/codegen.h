@@ -36,6 +36,11 @@ public:
         return error_flag_;
     }
 
+    static void setErrorFlag(bool flag)
+    {
+        error_flag_ = flag;
+    }
+
 private:
     void emitCodeLine(const std::string& code, const std::string& comment = std::string());
 
