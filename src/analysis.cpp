@@ -250,4 +250,9 @@ void Analysis::printSymbolTable() const
     symbol_table_.printSymbolTable();
 }
 
+int Analysis::lookupSymbolTable(const std::string& name) const
+{
+    return symbol_table_.lookup(name);
+}
+
 } // namespace nova

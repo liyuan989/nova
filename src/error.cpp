@@ -19,5 +19,10 @@ void errorSyntax(const std::string& message)
     std::cerr << "Syntax Error: " << message << std::endl;
     Parser::setErrorFlag(true);
 }
+
+void errorCodeGen(const std::string& message)
+{
+    std::cerr << "Codegen Error: " << message << std::endl;
+}
     
 } // namespace nova

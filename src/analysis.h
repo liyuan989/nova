@@ -21,6 +21,7 @@ public:
     void buildSymbolTable();
     void typeCheck();
     void printSymbolTable() const;
+    int lookupSymbolTable(const std::string& name) const;
 
 private:
     typedef std::function<void (AstPtr)> Func;

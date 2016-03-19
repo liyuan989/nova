@@ -29,11 +29,12 @@ bool SymbolTable::innerInsert(const std::string& name, const TokenLocation& loca
     }
 }
 
-int SymbolTable::lookup(const std::string& name)
+int SymbolTable::lookup(const std::string& name) const
 {
-    if (hash_map_.find(name) != hash_map_.end()) 
+    HashMap::const_iterator it = hash_map_.find(name);
+    if (it != hash_map_.end()) 
     {
-        return hash_map_[name]->index;   
+        return it->second->index;   
     }
     return -1;
 }

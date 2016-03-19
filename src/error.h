@@ -8,6 +8,7 @@ namespace nova
 
 void errorToken(const std::string& message);
 void errorSyntax(const std::string& message);
+void errorCodeGen(const std::string& message);
     
 } // namespace nova
 

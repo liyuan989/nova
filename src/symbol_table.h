@@ -41,7 +41,7 @@ public:
     }
 
     bool insert(const std::string& name, const TokenLocation& location);
-    int lookup(const std::string& name);
+    int lookup(const std::string& name) const;
     void printSymbolTable() const;
 
 private:
