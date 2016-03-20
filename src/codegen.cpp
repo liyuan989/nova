@@ -26,7 +26,7 @@ void CodeGenerator::emitCodeLine(const std::string& code, const std::string& com
     buffer_ << current_line_ << ":   " << code;
     if (trace_code_) 
     {
-        buffer_ << "\t\t" << comment;   
+        buffer_ << "\t\t* " << comment;   
     }
     buffer_ << std::endl;
 }
@@ -43,7 +43,7 @@ void CodeGenerator::emitRo(const std::string& code,
             << static_cast<int>(s) << "," << static_cast<int>(t);
     if (trace_code_) 
     {
-        buffer_ << "\t\t" << comment;   
+        buffer_ << "\t\t* " << comment;   
     }
     buffer_ << std::endl;
 }
@@ -70,7 +70,7 @@ void CodeGenerator::emitRm(int line,
             << "(" << static_cast<int>(s) << ")";
     if (trace_code_) 
     {
-        buffer_ << "\t\t" << comment;   
+        buffer_ << "\t\t* " << comment;   
     }
     buffer_ << std::endl;
 }

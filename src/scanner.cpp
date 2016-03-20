@@ -162,6 +162,7 @@ Token Scanner::getNextToken()
             default:
                 errorReport("Match error state.");
                 state_ = State::kNone;
+                buffer_.clear();
                 break;
         }
     } while (state_ != State::kNone);
@@ -204,6 +205,7 @@ void Scanner::handleCommentState()
         {
             std::string message = "End of file happened in comment, } is expected, buf find ";
             errorReport(message + current_char_);
+            buffer_.clear();
             break;
         }
     }
@@ -266,6 +268,7 @@ void Scanner::handleOperatorState()
         {
             errorReport("error: invalid character '" + buffer_ + "'");
             state_ = State::kNone;
+            buffer_.clear();
         }
     }
 }

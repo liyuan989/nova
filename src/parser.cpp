@@ -317,7 +317,7 @@ bool Parser::expectToken(TokenType type, const std::string& type_description, bo
 {
     if (scanner_.getToken().getTokenType() != type) 
     {
-        errorReport("Expected '" + type_description + "'but find " + scanner_.getToken().getTokenTypeDescription() + 
+        errorReport("Expected '" + type_description + "', but find " + scanner_.getToken().getTokenTypeDescription() + 
                     " " + scanner_.getToken().getTokenName());
         return false;
     }

@@ -7,6 +7,7 @@ set(SRCS
  analysis.cpp
  symbol_table.cpp
  codegen.cpp
+ vm.cpp
  )
 
 add_library(nova ${SRCS})
