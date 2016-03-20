@@ -1,7 +1,5 @@
 #include "vm.h"
 
-#include <vector>
-
 namespace nova 
 {
 

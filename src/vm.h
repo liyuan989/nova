@@ -16,15 +16,16 @@ namespace vm
 
 enum class TokenType 
 { 
-    kNumber,             // number
+    kNumber,
     kInstruction, 
-    kOperator,           // ( ) , :
+    kOperator,
     kEndOfFile,
     kUnknown,
 };
 
 enum class TokenValue 
-{ 
+{
+    // operator
     kLeftParenthesis,    // (
     kRightParenthesis,   // )
     kComma,              // ,
