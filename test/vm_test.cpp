@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "parser.h"
 #include "codegen.h"
 #include "vm.h"
@@ -15,5 +17,7 @@ int main(int argc, char* argv[])
     nova::vm::VirtualMachine vm(code);
     vm.buildInstructions();
     vm.printInstructions();
+    std::cout << "\n" << "--------- Virtual Mechine start running ----------" << std::endl;
+    vm.run();
     return 0;
 }

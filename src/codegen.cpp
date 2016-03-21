@@ -182,7 +182,7 @@ void CodeGenerator::generateRepeatStatement(AstPtr node)
     int saved_loc = current_line_ + 1;
     generateStatementSequence(ptr->bodyPart());
     generateExpression(ptr->testPart());
-    emitRm("JNE", Register::ac, saved_loc - current_line_ - 2, Register::pc, "repeat: jmp back to body");
+    emitRm("JEQ", Register::ac, saved_loc - current_line_ - 2, Register::pc, "repeat: jmp back to body");
     emitCommentLine("* <- repeat");
 }
 

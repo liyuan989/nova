@@ -1,5 +1,8 @@
 #include "vm.h"
 
+#include <assert.h>
+#include <string.h>
+
 namespace nova 
 {
 
@@ -117,7 +120,6 @@ Token Scanner::getNextToken()
                 handleOperatorState();
                 break;
         }
-        
     } while (state_ != State::kNone);
 
     return token_;
@@ -228,17 +230,180 @@ void Scanner::errorReport(const std::string& message)
     setErrorFlag(true);
 }
 
+const int VirtualMachine::kRegisterCount;
+const int VirtualMachine::kPc;
+const int VirtualMachine::kMp;
 bool VirtualMachine::error_flag_ = false;
 
 VirtualMachine::VirtualMachine(const std::string& code)
-    : scanner_(code)
+    : scanner_(code), global_mem_(64, 0), tmp_mem_(64, 0)
 {
+    memset(registers_, 0, sizeof(registers_));
     scanner_.getNextToken();
 }
 
 void VirtualMachine::run()
 {
+    registers_[kPc] = 1;
+    int running = true;
 
+    while (running && static_cast<size_t>(registers_[kPc]) < instructions_.size()) 
+    {
+        InstructionPtr& ins = instructions_[registers_[kPc]];
+        if (!checkRegisterNumber(ins->param1) || !checkRegisterNumber(ins->param3)) 
+        {
+            return;   
+        }
+        switch (ins->token_value) 
+        {
+            case TokenValue::kHalt:
+            {
+                running = false;
+                break;
+            }
+
+            case TokenValue::kIn:
+            {
+                std::cin >> registers_[ins->param1];
+                break;
+            }
+
+            case TokenValue::kOut:
+            {
+                std::cout << registers_[ins->param1] << std::endl;
+                break;
+            }
+
+            case TokenValue::kAdd:
+            {
+                if (!checkRegisterNumber(ins->param2)) 
+                {
+                    return;   
+                }
+                registers_[ins->param1] = registers_[ins->param2] + registers_[ins->param3];
+                break;
+            }
+
+            case TokenValue::kSub:
+            {
+                if (!checkRegisterNumber(ins->param2)) 
+                {
+                    return;   
+                }
+                registers_[ins->param1] = registers_[ins->param2] - registers_[ins->param3];
+                break;
+            }
+
+            case TokenValue::kMul:
+            {
+                if (!checkRegisterNumber(ins->param2)) 
+                {
+                    return;   
+                }
+                registers_[ins->param1] = registers_[ins->param2] * registers_[ins->param3];
+                break;
+            }
+
+            case TokenValue::kDiv:
+            {
+                if (!checkRegisterNumber(ins->param2)) 
+                {
+                    return;   
+                }
+                registers_[ins->param1] = registers_[ins->param2] / registers_[ins->param3];
+                break;
+            }
+
+            case TokenValue::kLd:
+            {
+                bool tmp_mem = (ins->param3 == kMp) ? true : false;
+                registers_[ins->param1] = loadMemory(ins->param2 + registers_[ins->param3], tmp_mem);
+                break;
+            }
+
+            case TokenValue::kLda:
+            {
+                registers_[ins->param1] = ins->param2 + registers_[ins->param3];
+                break;
+            }
+
+            case TokenValue::kLdc:
+            {
+                registers_[ins->param1] = ins->param2;
+                break;
+            }
+
+            case TokenValue::kSt:
+            {
+                bool tmp_mem = (ins->param3 == kMp) ? true : false;
+                pushMemory(ins->param2 + registers_[ins->param3], registers_[ins->param1], tmp_mem);
+                break;
+            }
+
+            case TokenValue::kJlt:
+            {
+                if (registers_[ins->param1] < 0) 
+                {
+                    registers_[kPc] = ins->param2 + registers_[ins->param3];   
+                }
+                break;
+            }
+
+            case TokenValue::kJle:
+            {
+                if (registers_[ins->param1] <= 0) 
+                {
+                    registers_[kPc] = ins->param2 + registers_[ins->param3];   
+                }
+                break;
+            }
+
+            case TokenValue::kJge:
+            {
+                if (registers_[ins->param1] >= 0) 
+                {
+                    registers_[kPc] = ins->param2 + registers_[ins->param3];   
+                }
+                break;
+            }
+
+            case TokenValue::kJgt:
+            {
+                if (registers_[ins->param1] > 0) 
+                {
+                    registers_[kPc] = ins->param2 + registers_[ins->param3];   
+                }
+                break;
+            }
+
+            case TokenValue::kJeq:
+            {
+                if (registers_[ins->param1] == 0) 
+                {
+                    registers_[kPc] = ins->param2 + registers_[ins->param3];   
+                }
+                break;
+            }
+
+            case TokenValue::kJne:
+            {
+                if (registers_[ins->param1] != 0) 
+                {
+                    registers_[kPc] = ins->param2 + registers_[ins->param3];   
+                }
+                break;
+            }
+
+            default:
+            {
+                std::cerr << "Invalid instruction: " << ins->name << std::endl;
+                running = false;
+                break;
+            }
+        }
+
+        ++registers_[kPc];
+    }
 }
 
 void VirtualMachine::buildInstructions()
@@ -246,12 +411,6 @@ void VirtualMachine::buildInstructions()
     while (!isEndOfFile() && !error_flag_) 
     {
         handleCodeLine();
-        /*
-        if (!isEndOfFile()) 
-        {
-            expectToken(TokenValue::kEndOfLine, "eol", true);   
-        }
-        */
     }
 }
 
@@ -410,6 +569,50 @@ void VirtualMachine::errorReport(const std::string& message)
 {
     std::cerr << "vm Syntax Error: " << message << std::endl;
     setErrorFlag(true);
+}
+    
+bool VirtualMachine::checkRegisterNumber(int num)
+{
+    if (num < 0 || num >= kRegisterCount) 
+    {
+        std::cerr << "invalid register number '" << num << "'" << std::endl;
+        return false;   
+    }
+    return true;
+}
+
+void VirtualMachine::pushMemory(int index, int val, bool tmp_mem)
+{
+    assert(index >= 0);
+    if (tmp_mem) 
+    {
+        if (static_cast<size_t>(index) >= tmp_mem_.size()) 
+        {
+            tmp_mem_.resize(2 * index);
+        } 
+        tmp_mem_[index] = val;
+    }
+    else
+    {
+        if (static_cast<size_t>(index) >= global_mem_.size()) 
+        {
+            global_mem_.resize(2 * index);
+        }
+        global_mem_[index] = val;
+    }
+}
+
+int VirtualMachine::loadMemory(int index, bool tmp_mem)
+{
+    assert(index >= 0);
+    if (tmp_mem) 
+    {
+        return tmp_mem_[index];   
+    }
+    else
+    {
+        return global_mem_[index];
+    }
 }
 
 void VirtualMachine::printInstructions() const

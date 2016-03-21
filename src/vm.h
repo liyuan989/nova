@@ -2,6 +2,7 @@
 #define __NOVA_VM_H__
 
 #include <string>
+#include <vector>
 #include <iostream>
 #include <sstream>
 #include <map>
@@ -168,6 +169,10 @@ typedef std::unique_ptr<Instruction> InstructionPtr;
 class VirtualMachine
 {
 public:
+    static const int kRegisterCount = 8;
+    static const int kPc = 7;
+    static const int kMp = 6;
+
     explicit VirtualMachine(const std::string& code);
     VirtualMachine(const VirtualMachine&) = delete;
     VirtualMachine& operator=(const VirtualMachine&) = delete;
@@ -197,11 +202,18 @@ private:
     bool expectToken(TokenValue value, const std::string& name, bool advance_next_token);
     void errorReport(const std::string& message);
 
+    bool checkRegisterNumber(int num);
+    void pushMemory(int index, int val, bool tmp_mem);
+    int loadMemory(int index, bool tmp_mem);
+
 private:
     typedef std::map<int, InstructionPtr> InstructionList;
 
     Scanner scanner_;
     InstructionList instructions_;
+    int registers_[kRegisterCount];
+    std::vector<int> global_mem_;
+    std::vector<int> tmp_mem_;
 
     static bool error_flag_;
 };
