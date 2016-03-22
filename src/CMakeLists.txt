@@ -1,3 +1,5 @@
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE})
+
 set(SRCS
  token.cpp
  scanner.cpp
@@ -11,3 +13,6 @@ set(SRCS
  )
 
 add_library(nova ${SRCS})
+
+add_executable(tiny tiny.cpp)
+target_link_libraries(tiny nova)

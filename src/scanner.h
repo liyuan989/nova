@@ -39,6 +39,11 @@ public:
         return location_;
     }
 
+    bool isFileOpened() const
+    {
+        return input_.is_open();
+    }
+
     static void setErrorFlag(bool flag)
     {
         error_flag_ = flag;
