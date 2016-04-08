@@ -221,14 +221,16 @@ AstPtr Parser::parseSimpleExpression()
 
     std::string op_name = scanner_.getToken().getTokenName();
     TokenValue op_value = scanner_.getToken().getTokenValue();
-    if (op_value != TokenValue::kPlus && op_value != TokenValue::kMinus)  // + or -
+    while (op_value == TokenValue::kPlus || op_value == TokenValue::kMinus)  // + or -
     {
-        return left_part;
+        scanner_.getNextToken();  // eat operator
+        AstPtr node = parseTerm();
+        left_part = std::make_shared<ExpressionAst>(loc, AstType::kExpression, op_name, op_value, left_part, node);
+        op_name = scanner_.getToken().getTokenName();
+        op_value = scanner_.getToken().getTokenValue();
     }
-
-    scanner_.getNextToken();  // eat operator
-    AstPtr right_part = parseTerm();
-    return std::make_shared<ExpressionAst>(loc, AstType::kExpression, op_name, op_value, left_part, right_part);
+    
+    return left_part;
 }
 
 AstPtr Parser::parseTerm()
@@ -238,14 +240,16 @@ AstPtr Parser::parseTerm()
 
     std::string op_name = scanner_.getToken().getTokenName();
     TokenValue op_value = scanner_.getToken().getTokenValue();
-    if (op_value != TokenValue::kMultiply && op_value != TokenValue::kDivide)   // * or /
+    while (op_value == TokenValue::kMultiply || op_value == TokenValue::kDivide)   // * or /
     {
-        return left_part;
+        scanner_.getNextToken();  // eat operator
+        AstPtr node = parseFactor();
+        left_part = std::make_shared<ExpressionAst>(loc, AstType::kExpression, op_name, op_value, left_part, node);
+        op_name = scanner_.getToken().getTokenName();
+        op_value = scanner_.getToken().getTokenValue();
     }
-
-    scanner_.getNextToken();  // eat operator
-    AstPtr right_part = parseFactor();
-    return std::make_shared<ExpressionAst>(loc, AstType::kExpression, op_name, op_value, left_part, right_part);
+    
+    return left_part;
 }
 
 AstPtr Parser::parseFactor()
