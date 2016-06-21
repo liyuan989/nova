@@ -17,7 +17,7 @@ set(CMAKE_CXX_FLAGS
 -Wreorder
 -march=native
 -D_FILE_OFFSET_BITS=64
--rdynamic
+#-rdynamic
 -std=c++1y
 )
 

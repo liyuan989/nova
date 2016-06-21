@@ -588,17 +588,17 @@ void VirtualMachine::pushMemory(int index, int val, bool tmp_mem)
     {
         if (static_cast<size_t>(index) >= tmp_mem_.size()) 
         {
-            tmp_mem_.resize(2 * index);
+            tmp_mem_.resize(static_cast<size_t>(2 * index));
         } 
-        tmp_mem_[index] = val;
+        tmp_mem_[static_cast<size_t>(index)] = val;
     }
     else
     {
         if (static_cast<size_t>(index) >= global_mem_.size()) 
         {
-            global_mem_.resize(2 * index);
+            global_mem_.resize(static_cast<size_t>(2 * index));
         }
-        global_mem_[index] = val;
+        global_mem_[static_cast<size_t>(index)] = val;
     }
 }
 
@@ -607,11 +607,11 @@ int VirtualMachine::loadMemory(int index, bool tmp_mem)
     assert(index >= 0);
     if (tmp_mem) 
     {
-        return tmp_mem_[index];   
+        return tmp_mem_[static_cast<size_t>(index)];   
     }
     else
     {
-        return global_mem_[index];
+        return global_mem_[static_cast<size_t>(index)];
     }
 }
 
