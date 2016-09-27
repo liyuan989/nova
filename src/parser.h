@@ -4,11 +4,9 @@
 #include "scanner.h"
 #include "ast.h"
 
-namespace nova 
-{
+namespace nova {
 
-class Parser
-{
+class Parser {
 public:
     explicit Parser(Scanner& scanner);
     Parser(const Parser&) = delete;
@@ -16,15 +14,8 @@ public:
 
     AstPtr parse();
 
-    static void setErrorFlag(bool flag)
-    {
-        error_flag_ = flag;
-    }
-
-    static bool getErrorFlag()
-    {
-        return error_flag_;
-    }
+    static void setErrorFlag(bool flag) { error_flag_ = flag; }
+    static bool getErrorFlag() { return error_flag_; }
 
 private:
     bool validateToken(TokenType type, bool advance_next_token);

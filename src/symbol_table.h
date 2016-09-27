@@ -8,15 +8,12 @@
 
 #include "token.h"
 
-namespace nova 
-{
+namespace nova {
 
-struct SymbolRecord
-{
+struct SymbolRecord {
     SymbolRecord(const std::string& symbol_name, int symbol_index, int symbol_line, int symbol_number)
         : name(symbol_name),
-          index(symbol_index)
-    {
+          index(symbol_index) {
         location.push_back(std::make_pair(symbol_line, symbol_number));
     }
 
@@ -27,17 +24,14 @@ struct SymbolRecord
 
 typedef std::unique_ptr<SymbolRecord> SymbolRecordPtr;
 
-inline SymbolRecordPtr makeSymbolRecord(const std::string& name, int index, int line, int column)
-{
+inline SymbolRecordPtr makeSymbolRecord(const std::string& name, int index, int line, int column) {
     return std::make_unique<SymbolRecord>(name, index, line, column);
 }
 
-class SymbolTable
-{
+class SymbolTable {
 public:
     SymbolTable()
-        : current_index_(0)
-    {
+        : current_index_(0) {
     }
 
     bool insert(const std::string& name, const TokenLocation& location);

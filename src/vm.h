@@ -9,14 +9,11 @@
 #include <unordered_map>
 #include <memory>
 
-namespace nova 
-{
+namespace nova {
 
-namespace vm 
-{
+namespace vm {
 
-enum class TokenType 
-{ 
+enum class TokenType { 
     kNumber,
     kInstruction, 
     kOperator,
@@ -24,8 +21,7 @@ enum class TokenType
     kUnknown,
 };
 
-enum class TokenValue 
-{
+enum class TokenValue {
     // operator
     kLeftParenthesis,    // (
     kRightParenthesis,   // )
@@ -62,11 +58,11 @@ enum class TokenValue
     kUnReserved,
 };
 
-struct Token
-{
+struct Token {
     Token(const std::string& name, TokenValue value, TokenType type)
-        : token_name(name), token_value(value), token_type(type)
-    {
+        : token_name(name), 
+          token_value(value), 
+          token_type(type) {
     }
 
     std::string token_name;
@@ -76,11 +72,9 @@ struct Token
 
 typedef std::unique_ptr<Token> TokenPtr;
 
-class Scanner
-{
+class Scanner {
 public:
-    enum class State 
-    { 
+    enum class State { 
         kNone,
         kStart,
         kInstruction,
@@ -97,20 +91,10 @@ public:
 
     Token getNextToken();
 
-    Token getToken() const
-    {
-        return token_;
-    }
+    Token getToken() const { return token_; }
 
-    static bool getErrorFlag()
-    {
-        return error_flag_;
-    }
-
-    static void setErrorFlag(bool flag)
-    {
-        error_flag_ = flag;
-    }
+    static bool getErrorFlag() { return error_flag_; }
+    static void setErrorFlag(bool flag) { error_flag_ = flag; }
 
 private:
     void addToken(const std::string& name, TokenValue value, TokenType type);
@@ -144,16 +128,14 @@ private:
     static bool error_flag_;
 };
  
-struct Instruction 
-{
+struct Instruction {
     Instruction(int l, TokenValue value, int p1, int p2, int p3, const std::string& n)
         : line(l),
           token_value(value),
           param1(p1),
           param2(p2),
           param3(p3),
-          name(n)
-    {
+          name(n) {
     }
 
     int line;
@@ -166,8 +148,7 @@ struct Instruction
 
 typedef std::unique_ptr<Instruction> InstructionPtr;
 
-class VirtualMachine
-{
+class VirtualMachine {
 public:
     static const int kRegisterCount = 8;
     static const int kPc = 7;
@@ -179,18 +160,10 @@ public:
 
     void buildInstructions();
     void run();
-
     void printInstructions() const;  // for debug
 
-    static bool getErrorFlag()
-    {
-        return error_flag_;
-    }
-
-    static void setErrorFlag(bool flag)
-    {
-        error_flag_ = flag;
-    }
+    static bool getErrorFlag() { return error_flag_; }
+    static void setErrorFlag(bool flag) { error_flag_ = flag; }
 
 private:
     bool isEndOfFile() const;

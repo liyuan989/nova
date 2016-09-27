@@ -12,8 +12,7 @@ Token::Token(TokenType token_type,
       token_value_(token_value),
       token_location_(token_location),
       symbol_precedence_(symbol_precedence),
-      name_(name)
-{
+      name_(name) {
 }
 
 Token::Token(TokenType token_type, 
@@ -27,8 +26,7 @@ Token::Token(TokenType token_type,
       token_location_(token_location),
       symbol_precedence_(symbol_precedence),
       name_(name),
-      string_value_(string_value)
-{
+      string_value_(string_value) {
 }
 
 Token::Token(TokenType token_type, 
@@ -42,15 +40,12 @@ Token::Token(TokenType token_type,
       token_location_(token_location),
       symbol_precedence_(symbol_precedence),
       name_(name),
-      int_value_(int_value)
-{
+      int_value_(int_value) {
 }
 
-std::string Token::getTokenTypeDescription() const
-{
+std::string Token::getTokenTypeDescription() const {
     std::string result;
-    switch (token_type_) 
-    {
+    switch (token_type_) {
         case TokenType::kIdentifier:
             result = "identifier";
             break;
@@ -79,3 +74,4 @@ std::string Token::getTokenTypeDescription() const
 }
     
 } // namespace nova
+

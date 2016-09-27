@@ -3,8 +3,7 @@
 
 #include <string>
 
-namespace nova 
-{
+namespace nova {
 
 void errorToken(const std::string& message);
 void errorSyntax(const std::string& message);

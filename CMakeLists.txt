@@ -20,7 +20,6 @@ set(CMAKE_CXX_FLAGS
 #-rdynamic
 -std=c++1y
 )
-
 if(CMAKE_BUILD_BITS EQUAL 32)
     list(APPEND CMAKE_CXX_FLAGS "-m32")
 endif()

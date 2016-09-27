@@ -6,11 +6,9 @@
 
 #include "analysis.h"
 
-namespace nova 
-{
+namespace nova {
 
-enum class Register 
-{ 
+enum class Register { 
     invalid = -1,
     ac = 0,         // accumulator
     ac1 = 1,        // accumulator1
@@ -21,8 +19,7 @@ enum class Register
 
 typedef std::string CodeBuffer;
 
-class CodeGenerator
-{
+class CodeGenerator {
 public:
     CodeGenerator(Analysis& analyst, 
                   const AstPtr& ptr, 
@@ -31,15 +28,8 @@ public:
 
     CodeBuffer generateCode();
 
-    static bool getErrorFlag()
-    {
-        return error_flag_;
-    }
-
-    static void setErrorFlag(bool flag)
-    {
-        error_flag_ = flag;
-    }
+    static bool getErrorFlag() { return error_flag_; }
+    static void setErrorFlag(bool flag) { error_flag_ = flag; }
 
 private:
     void emitCodeLine(const std::string& code, const std::string& comment = std::string());

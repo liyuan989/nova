@@ -2,8 +2,7 @@
 
 #include "error.h"
 
-namespace nova 
-{
+namespace nova {
 
 bool CodeGenerator::error_flag_ = false;
 
@@ -16,16 +15,13 @@ CodeGenerator::CodeGenerator(Analysis& analyst,
       file_name_(file_name), 
       current_line_(0),
       tmp_offset_(0),
-      trace_code_(trace_code)
-{
+      trace_code_(trace_code) {
 }
 
-void CodeGenerator::emitCodeLine(const std::string& code, const std::string& comment)
-{
+void CodeGenerator::emitCodeLine(const std::string& code, const std::string& comment) {
     ++current_line_;
     buffer_ << current_line_ << ":   " << code;
-    if (trace_code_) 
-    {
+    if (trace_code_) {
         buffer_ << "\t\t* " << comment;   
     }
     buffer_ << std::endl;
@@ -36,13 +32,11 @@ void CodeGenerator::emitRo(const std::string& code,
                            Register r, 
                            Register s, 
                            Register t, 
-                           const std::string& comment)
-{
+                           const std::string& comment) {
     ++current_line_;
     buffer_ << current_line_ << ":   " << code << " " << static_cast<int>(r) << "," 
             << static_cast<int>(s) << "," << static_cast<int>(t);
-    if (trace_code_) 
-    {
+    if (trace_code_) {
         buffer_ << "\t\t* " << comment;   
     }
     buffer_ << std::endl;
@@ -53,8 +47,7 @@ void CodeGenerator::emitRm(const std::string& code,
                            Register r, 
                            int64_t d, 
                            Register s, 
-                           const std::string&comment)
-{
+                           const std::string&comment) {
     ++current_line_;
     emitRm(current_line_, code, r, d, s, comment);
 }
@@ -64,8 +57,7 @@ void CodeGenerator::emitRm(int line,
                            Register r, 
                            int64_t d, 
                            Register s, 
-                           const std::string& comment)
-{
+                           const std::string& comment) {
     buffer_ << line << ":   " << code << " " << static_cast<int>(r) << "," << d
             << "(" << static_cast<int>(s) << ")";
     if (trace_code_) 
@@ -75,16 +67,13 @@ void CodeGenerator::emitRm(int line,
     buffer_ << std::endl;
 }
 
-void CodeGenerator::emitCommentLine(const std::string& comment)
-{
-    if (trace_code_) 
-    {
+void CodeGenerator::emitCommentLine(const std::string& comment) {
+    if (trace_code_) {
         buffer_ << comment << std::endl;
     }
 }
 
-void CodeGenerator::generatePrelude()
-{
+void CodeGenerator::generatePrelude() {
     emitCommentLine("* TINY Compilation to TM Code");
     emitCommentLine("* File: " + file_name_);
     emitCommentLine("* Standard prelude:");
@@ -93,8 +82,7 @@ void CodeGenerator::generatePrelude()
     emitCommentLine("* End of standard prelude.");
 }
 
-CodeBuffer CodeGenerator::generateCode()
-{
+CodeBuffer CodeGenerator::generateCode() {
     generatePrelude();
     generateStatementSequence(root_);
     emitCommentLine("* End of execution");
@@ -102,12 +90,9 @@ CodeBuffer CodeGenerator::generateCode()
     return buffer_.str();
 }
 
-void CodeGenerator::generateStatementSequence(AstPtr node)
-{
-    while (node != nullptr) 
-    {
-        switch (node->getAstType())
-        {
+void CodeGenerator::generateStatementSequence(AstPtr node) {
+    while (node != nullptr) {
+        switch (node->getAstType()) {
             case AstType::kIf:
                 generateIfStatement(node);
                 break;
@@ -140,11 +125,9 @@ void CodeGenerator::generateStatementSequence(AstPtr node)
     }
 }
 
-void CodeGenerator::generateIfStatement(AstPtr node)
-{
+void CodeGenerator::generateIfStatement(AstPtr node) {
     IfStatementAstPtr ptr = std::dynamic_pointer_cast<IfStatementAst>(node);
-    if (!ptr) 
-    {
+    if (!ptr) {
         return;   
     }
 
@@ -161,8 +144,7 @@ void CodeGenerator::generateIfStatement(AstPtr node)
     int saved_loc2 = current_line_;
     emitRm(saved_loc, "JEQ", Register::ac, current_line_ - saved_loc, Register::pc, "if: jmp to false");
 
-    if (ptr->elsePart()) 
-    {
+    if (ptr->elsePart()) {
         generateStatementSequence(ptr->elsePart());  
     }
 
@@ -170,11 +152,9 @@ void CodeGenerator::generateIfStatement(AstPtr node)
     emitCommentLine("* <- if");
 }
 
-void CodeGenerator::generateRepeatStatement(AstPtr node)
-{
+void CodeGenerator::generateRepeatStatement(AstPtr node) {
     RepeatStatementAstPtr ptr = std::dynamic_pointer_cast<RepeatStatementAst>(node);
-    if (!ptr) 
-    {
+    if (!ptr) {
         return;   
     }
     emitCommentLine("* -> repeat");
@@ -186,11 +166,9 @@ void CodeGenerator::generateRepeatStatement(AstPtr node)
     emitCommentLine("* <- repeat");
 }
 
-void CodeGenerator::generateAssignStatement(AstPtr node)
-{
+void CodeGenerator::generateAssignStatement(AstPtr node) {
     AssignStatementAstPtr ptr = std::dynamic_pointer_cast<AssignStatementAst>(node);
-    if (!ptr) 
-    {
+    if (!ptr) {
         return; 
     }
     emitCommentLine("* -> assign");
@@ -200,11 +178,9 @@ void CodeGenerator::generateAssignStatement(AstPtr node)
     emitCommentLine("* <- assign");
 }
 
-void CodeGenerator::generateReadStatement(AstPtr node)
-{
+void CodeGenerator::generateReadStatement(AstPtr node) {
     ReadStatementAstPtr ptr = std::dynamic_pointer_cast<ReadStatementAst>(node);
-    if (!ptr) 
-    {
+    if (!ptr) {
         return;   
     }
     emitRo("IN", Register::ac, Register::ac, Register::ac, "read integer value");
@@ -212,21 +188,17 @@ void CodeGenerator::generateReadStatement(AstPtr node)
     emitRm("ST", Register::ac, offset, Register::gp, "read: store value");
 }
 
-void CodeGenerator::generateWriteStatement(AstPtr node)
-{
+void CodeGenerator::generateWriteStatement(AstPtr node) {
     WriteStatementAstPtr ptr = std::dynamic_pointer_cast<WriteStatementAst>(node);
-    if (!ptr) 
-    {
+    if (!ptr) {
         return;   
     }
     generateExpression(ptr->expression());
     emitRo("OUT", Register::ac, Register::ac, Register::ac, "write ac");
 }
 
-void CodeGenerator::generateExpression(AstPtr node)
-{
-    switch (node->getAstType()) 
-    {
+void CodeGenerator::generateExpression(AstPtr node) {
+    switch (node->getAstType()) {
         case AstType::kVariable:
             generateVariable(node);
             return;
@@ -240,8 +212,7 @@ void CodeGenerator::generateExpression(AstPtr node)
     }
 
     ExpressionAstPtr ptr = std::dynamic_pointer_cast<ExpressionAst>(node);
-    if (!ptr) 
-    {
+    if (!ptr) {
         return;   
     }
 
@@ -253,8 +224,7 @@ void CodeGenerator::generateExpression(AstPtr node)
     --tmp_offset_;
     emitRm("LD", Register::ac1, tmp_offset_, Register::mp, "op: load left");
 
-    switch (ptr->operatorTokenValue()) 
-    {
+    switch (ptr->operatorTokenValue()) {
         case TokenValue::kPlus:
             emitRo("ADD", Register::ac, Register::ac1, Register::ac, "op +"); 
             break;
@@ -294,11 +264,9 @@ void CodeGenerator::generateExpression(AstPtr node)
     emitCommentLine("* <- op");
 }
 
-void CodeGenerator::generateVariable(AstPtr node)
-{
+void CodeGenerator::generateVariable(AstPtr node) {
     VariableAstPtr ptr = std::dynamic_pointer_cast<VariableAst>(node);
-    if (!ptr) 
-    {
+    if (!ptr) {
         return;   
     }
     emitCommentLine("* -> Id");
@@ -307,11 +275,9 @@ void CodeGenerator::generateVariable(AstPtr node)
     emitCommentLine("* <- Id");
 }
 
-void CodeGenerator::generateConstant(AstPtr node)
-{
+void CodeGenerator::generateConstant(AstPtr node) {
     ConstantAstPtr ptr = std::dynamic_pointer_cast<ConstantAst>(node);
-    if (!ptr) 
-    {
+    if (!ptr) {
         return;   
     }
     emitCommentLine("* -> Const");
@@ -319,8 +285,7 @@ void CodeGenerator::generateConstant(AstPtr node)
     emitCommentLine("* <- Const");
 }
 
-void CodeGenerator::errorReport(const std::string& message)
-{
+void CodeGenerator::errorReport(const std::string& message) {
     std::ostringstream o;
     o << current_line_; 
     errorCodeGen(o.str() + message);

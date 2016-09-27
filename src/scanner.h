@@ -7,14 +7,11 @@
 
 #include "token.h"
 
-namespace nova 
-{
+namespace nova {
 
-class Scanner
-{
+class Scanner {
 public:
-    enum class State
-    { 
+    enum class State { 
         kNone,
         kStart,
         kNumber,
@@ -25,34 +22,17 @@ public:
     };
 
     explicit Scanner(const std::string& file_name);
+
     Scanner(const Scanner&) = delete;
     Scanner& operator=(const Scanner&) = delete;
+
     Token getNextToken();
+    Token getToken() const { return token_; }
+    TokenLocation getTokenLocation() { return location_; }
+    bool isFileOpened() const { return input_.is_open(); }
 
-    Token getToken() const
-    {
-        return token_;
-    }
-
-    TokenLocation getTokenLocation()
-    {
-        return location_;
-    }
-
-    bool isFileOpened() const
-    {
-        return input_.is_open();
-    }
-
-    static void setErrorFlag(bool flag)
-    {
-        error_flag_ = flag;
-    }
-
-    static bool getErrorFlag()
-    {
-        return error_flag_;
-    }
+    static void setErrorFlag(bool flag) { error_flag_ = flag; }
+    static bool getErrorFlag() { return error_flag_; }
 
 private:
     void addToken(const std::string& name, TokenRecordPtr&& record);
@@ -91,9 +71,8 @@ private:
     void handleOperatorState();
     void handEndOfFileState();
 
-    void updateTokenLocation()
-    {
-        location_ = TokenLocation(file_name_, line_, column_);
+    void updateTokenLocation() { 
+        location_ = TokenLocation(file_name_, line_, column_); 
     }
 
 private:

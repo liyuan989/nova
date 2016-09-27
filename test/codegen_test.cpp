@@ -3,8 +3,7 @@
 
 #include <iostream>
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     nova::Scanner scanner("test.tiny");
     nova::Parser parser(scanner);
     nova::AstPtr root = parser.parse();

@@ -4,15 +4,12 @@
 #include "ast.h"
 #include "symbol_table.h"
 
-namespace nova 
-{
+namespace nova {
 
-class Analysis
-{
+class Analysis {
 public:
     explicit Analysis(AstPtr ast_root)
-        : root_(ast_root)
-    {
+        : root_(ast_root) {
     }
 
     Analysis(const Analysis&) = delete;
