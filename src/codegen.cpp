@@ -60,8 +60,7 @@ void CodeGenerator::emitRm(int line,
                            const std::string& comment) {
     buffer_ << line << ":   " << code << " " << static_cast<int>(r) << "," << d
             << "(" << static_cast<int>(s) << ")";
-    if (trace_code_) 
-    {
+    if (trace_code_) {
         buffer_ << "\t\t* " << comment;   
     }
     buffer_ << std::endl;
