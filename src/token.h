@@ -55,8 +55,7 @@ struct TokenRecord {
     int symbol_precedence;
 };
 
-class TokenLocation
-{
+class TokenLocation {
 public:
     TokenLocation()
         : file_name_(""), 

@@ -203,8 +203,7 @@ void Scanner::handleIdentifierState() {
     }
 }
 
-void Scanner::handleOperatorState()
-{
+void Scanner::handleOperatorState() {
     updateTokenLocation();
     addToBuffer(current_char_);
     addToBuffer(peekChar());

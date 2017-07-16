@@ -1,7 +1,6 @@
 #include "token.h"
 
-namespace nova 
-{
+namespace nova {
 
 Token::Token(TokenType token_type, 
              TokenValue token_value, 
