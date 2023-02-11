@@ -1,8 +1,8 @@
-#nova
+# nova
 
 A compiler for tiny language, which is simple practice for [Compiler Construction Principles and Practice](http://www.amazon.com/Compiler-Construction-Principles-Kenneth-Louden/dp/0534939724)
 
-###BNF Grammer
+### BNF Grammer
 
 ```
 program  ->  stmt-sequence
